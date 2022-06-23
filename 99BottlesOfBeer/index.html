@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>99 bottles of beer</title>
+        <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="../../dist/jsRealB.js"></script>
+<!-- to ease debugging we load each file separately -/->
+        <script src="../../data/lexicon-fr.js"></script>
+        <script src="../../data/rule-fr.js"></script>
+        <script src="../../data/lexicon-en.js"></script>
+        <script src="../../data/rule-en.js"></script>
+        <script src="../../build/Utils.js"></script>
+        <script src="../../build/Constituent.js"></script>
+        <script src="../../build/Phrase.js"></script>
+        <script src="../../build/Terminal.js"></script>
+        <script src="../../build/Dependent.js"></script>
+        <script src="../../build/Number.js"></script>
+        <script src="../../build/Warnings.js"></script>
+<!-/- end of separate loading -->
+    <script>
+        function nbb(n){ // (n|no more) bottle(s) of beer
+            var b=A("positive");
+            var ob=PP(P("of"),N("beer"));
+            if (n==0) return NP("no more",b.n("p"),ob);
+            return NP(NO(n).nat(true),b,ob);
+        }
+        function nbbW(n){ // n bottles of beer on the wall
+            return NP(nbb(n),
+                      PP(P("on"),
+                         D("the"),
+                         N("wall")));
+        }
+        
+        function verse(n){
+            var vers1=CP(nbbW(n), 
+                         nbb(n));
+            var vers2;
+            if (n>0){
+                var tod=VP(V("take").pe(2).t("ip"),NO(1).nat(true),P("down"));
+                var pia=VP(V("pass").pe(2),Pro("I").g("n").pe(3),P("around")).a(","); 
+                vers2=CP(C("and"),tod,pia,nbbW(n-1));
+            } else {
+                var gts=VP(V("go").pe(2),PP(P("to"),D("a"),N("store")));
+                var bsm=VP(V("buy").pe(2),"some more");
+                vers2=CP(CP(C("and"),gts,bsm),nbbW(99));
+            }
+            return S(vers1)+"<br/>"+S(vers2);
+        }
+        function generate() {
+            var $body=$("body");
+            for (var nb=99;nb>=0;nb--)
+                $body.append("<p>"+verse(nb)+"</p>");
+        };
+        
+       $(document).ready(function() {
+		   loadEn();
+           generate();
+       });
+        </script>
+    </head>
+    <body>
+        <h1>JSrealB version of <a href="http://www.99-bottles-of-beer.net/lyrics.html">99 bottles of beer</a></h1>
+    </body>
+</html>
